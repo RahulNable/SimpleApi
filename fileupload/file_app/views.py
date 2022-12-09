@@ -184,29 +184,29 @@ def extractFile(request):
                 os.rename(f'./mediafiles/ExtractedExcelfile/xl/media/{file}', f'./mediafiles/ExtractedExcelfile/xl/media/{"".join([randomfilename, file])}')
             
             # code for database
-            # flag = 0
-            # df = pd.read_excel(f'./mediafiles/{filename}')
-            # rows = df.values.tolist()
-            # for row in range(10):
-            #     flag = 0
-            #     for col in range(7):
-            #         for imageDataIndex in imageData:
-            #             # print(row,imageDataIndex['row'],col,imageDataIndex['col'])
-            #             if row == int(imageDataIndex['row']) and col == int(imageDataIndex['col']):
-            #                 # print(row,imageDataIndex['row'],col,imageDataIndex['col'])
-            #                 print('row = ',row,'========image in this row============')
-            #                 print(rows[row-1][0], rows[row-1][1], rows[row-1][2], rows[row-1][4], rows[row-1][5], rows[row-1][6], rows[row-1][7])
-            #                 flag = 1
-            #                 with open(f'./mediafiles/ExtractedExcelfile/xl/media/{imageData[imageDataIndex].imagename}', 'rb') as file:
-            #                     binaryData = file.read()
+            flag = 0
+            df = pd.read_excel(f'./mediafiles/{filename}')
+            rows = df.values.tolist()
+            for row in range(10):
+                flag = 0
+                for col in range(7):
+                    for imageDataIndex in imageData:
+                        # print(row,imageDataIndex['row'],col,imageDataIndex['col'])
+                        if row == int(imageDataIndex['row']) and col == int(imageDataIndex['col']):
+                            # print(row,imageDataIndex['row'],col,imageDataIndex['col'])
+                            print('row = ',row,'========image in this row============')
+                            print(rows[row-1][0], rows[row-1][1], rows[row-1][2], rows[row-1][4], rows[row-1][5], rows[row-1][6], rows[row-1][7])
+                            flag = 1
+                            with open(f'./mediafiles/ExtractedExcelfile/xl/media/{imageData[imageDataIndex].imagename}', 'rb') as file:
+                                binaryData = file.read()
 
-            #                 tender = TenderImport.objects.create(CustomerRefNo = rows[row-1][0], Refno = rows[row-1][1], Image = binaryData, DESCRIPTION = rows[row-1][2], UNIT = rows[row-1][4], Quantity = rows[row-1][5], Rate = rows[row-1][6], Amount = rows[row-1][7])
-            #                 print('CreatedInTenderImport>>>>',tender)
-            #     if flag == 0:
-            #         print('row = ',row,'========no image in this row============')
-            #         print(rows[row-1][0], rows[row-1][1], rows[row-1][2], rows[row-1][4], rows[row-1][5], rows[row-1][6], rows[row-1][7])
-            #         tender = TenderImport.objects.create(CustomerRefNo = rows[row-1][0], Refno = rows[row-1][1], DESCRIPTION = rows[row-1][2], UNIT = rows[row-1][4], Quantity = rows[row-1][5], Rate = rows[row-1][6], Amount = rows[row-1][7])
-            #         print('CreatedInTenderImport>>>>',tender)
+                            tender = TenderImport.objects.create(CustomerRefNo = rows[row-1][0], Refno = rows[row-1][1], Image = binaryData, DESCRIPTION = rows[row-1][2], UNIT = rows[row-1][4], Quantity = rows[row-1][5], Rate = rows[row-1][6], Amount = rows[row-1][7])
+                            print('CreatedInTenderImport>>>>',tender)
+                if flag == 0:
+                    print('row = ',row,'========no image in this row============')
+                    print(rows[row-1][0], rows[row-1][1], rows[row-1][2], rows[row-1][4], rows[row-1][5], rows[row-1][6], rows[row-1][7])
+                    tender = TenderImport.objects.create(CustomerRefNo = rows[row-1][0], Refno = rows[row-1][1], DESCRIPTION = rows[row-1][2], UNIT = rows[row-1][4], Quantity = rows[row-1][5], Rate = rows[row-1][6], Amount = rows[row-1][7])
+                    print('CreatedInTenderImport>>>>',tender)
                             
         
             return JsonResponse({"filename": filename,"imagedata": imageData})
