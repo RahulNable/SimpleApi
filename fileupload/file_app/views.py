@@ -14,6 +14,8 @@ import shutil
 from file_app.models import TenderImport, File
 from fileupload.settings import IMAGEFILE
 import pandas as pd
+import numpy as np
+
 
 class FileView(APIView):
   parser_classes = (MultiPartParser, FormParser)
@@ -29,19 +31,19 @@ class FileView(APIView):
       return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
-def toDataBase(request):
+# @api_view(['GET'])
+# def toDataBase(request):
 
-    with open(IMAGEFILE, 'rb') as file:
-        binaryData = file.read()
+#     with open(IMAGEFILE, 'rb') as file:
+#         binaryData = file.read()
 
-    tender = TenderImport.objects.create(CustomerRefNo = 102, Refno = 22, Image = binaryData, DESCRIPTION = 'some description', UNIT = 'nos', Quantity = 22, Rate = 52, Amount = 1200,)
-    print('CreatedInTenderImport>>>>',tender)
+#     tender = TenderImport.objects.create(CustomerRefNo = 102, Refno = 22, Image = binaryData, DESCRIPTION = 'some description', UNIT = 'nos', Quantity = 22, Rate = 52, Amount = 1200,)
+#     print('CreatedInTenderImport>>>>',tender)
 
-    return JsonResponse({'output': "hello"})
+#     return JsonResponse({'output': "hello"})
 
 
-@api_view(['GET'])
+@api_view(['GET'])  # for filelist 
 def getFileNames(request):
 
     filenames = []
@@ -186,8 +188,9 @@ def extractFile(request):
             # code for database
             flag = 0
             df = pd.read_excel(f'./mediafiles/{filename}')
+            df = df.replace(np.nan, 0)
             rows = df.values.tolist()
-            for row in range(10):
+            for row in range(1,10):
                 flag = 0
                 for col in range(7):
                     for imageDataIndex in imageData:
@@ -197,7 +200,7 @@ def extractFile(request):
                             print('row = ',row,'========image in this row============')
                             print(rows[row-1][0], rows[row-1][1], rows[row-1][2], rows[row-1][4], rows[row-1][5], rows[row-1][6], rows[row-1][7])
                             flag = 1
-                            with open(f'./mediafiles/ExtractedExcelfile/xl/media/{imageData[imageDataIndex].imagename}', 'rb') as file:
+                            with open(f'./mediafiles/ExtractedExcelfile/xl/media/{imageDataIndex["imagename"]}', 'rb') as file:
                                 binaryData = file.read()
 
                             tender = TenderImport.objects.create(CustomerRefNo = rows[row-1][0], Refno = rows[row-1][1], Image = binaryData, DESCRIPTION = rows[row-1][2], UNIT = rows[row-1][4], Quantity = rows[row-1][5], Rate = rows[row-1][6], Amount = rows[row-1][7])
@@ -211,4 +214,3 @@ def extractFile(request):
         
             return JsonResponse({"filename": filename,"imagedata": imageData})
     # return JsonResponse({"filename": filename})
-
